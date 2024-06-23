@@ -1,0 +1,14 @@
+{
+  "editor.hover.enabled": true,
+  "tailwindCSS.includeLanguages": {
+    "html": "html",
+    "javascript": "javascript",
+    "css": "css"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "cSpell.words": ["Micko", "smitty", "Smitty"],
+  "css.customData": [".vscode/tailwind.json"],
+  "css.lint.unknownAtRules": "ignore"
+}
