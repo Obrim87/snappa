@@ -8,7 +8,9 @@ const SignIn = () => {
   return (
     <div className='bg-primary h-screen'>
       <form
-        onSubmit={handleSubmit((data) => console.log(data))}
+        onSubmit={handleSubmit((data) => {
+          console.log(data);
+        })}
         className='max-w-xl m-auto text-primaryText text-center flex flex-col items-center'>
         <h1 className='p-5 mb-4 text-2xl'>Sign in to Your Account</h1>
 
@@ -24,6 +26,7 @@ const SignIn = () => {
           {...register('password')}
           className='input mb-2'
           placeholder='Password'
+          type='password'
           required
         />
         <div className='flex w-5/6 m-5 text-customGreen'>

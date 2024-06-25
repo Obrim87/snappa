@@ -1,13 +1,27 @@
-// const express = require('express');
-import express, { Request, Response } from 'express';
-const { PORT } = require('./utils/config');
+import express from 'express';
+import configs from './utils/config';
+import db from './utils/db';
+import usersRouter from './controllers/users';
+import gamesRouter from './controllers/games';
+import loginRouter from './controllers/login';
+import cors from 'cors';
 
+const { connectToDatabase } = db;
+const { PORT } = configs;
 const app = express();
 
-app.get('/', (_req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
+app.use(cors());
+app.use(express.json());
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT} 🚀`);
-});
+app.use('/api/users', usersRouter);
+app.use('/api/games', gamesRouter);
+app.use('/api/login', loginRouter);
+
+const start = async () => {
+  await connectToDatabase();
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT} 🚀`);
+  });
+};
+
+start();

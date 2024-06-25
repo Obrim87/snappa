@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "outDir": "./build/",
+    "target": "es2018",
     "module": "commonjs",
-    "strict": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
+    "outDir": "build",
+    "sourceMap": true,
     "esModuleInterop": true
-  }
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
 }

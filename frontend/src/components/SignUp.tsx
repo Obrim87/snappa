@@ -1,21 +1,37 @@
+// import { dateRegex } from '../utils/regex.ts';
 import { useForm } from 'react-hook-form';
 import { UserSignupInput } from '../types';
 import { Link } from 'react-router-dom';
-import { dateRegex } from '../utils/regex.ts';
+import axios from 'axios';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors }
+    formState,
+    formState: { errors, isSubmitSuccessful },
   } = useForm<UserSignupInput>();
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      navigate('/sign-in');
+    }
+  }, [isSubmitSuccessful]);
+
+  console.log('form', formState);
 
   return (
     <div className='bg-primary h-screen'>
       <form
-        onSubmit={handleSubmit((data) => {
-          console.log(data);
+        onSubmit={handleSubmit(async (data) => {
+          delete data.confirmPassword;
+          await axios.post(`${apiBaseUrl}/api/users`, data);
         })}
         className='max-w-xl m-auto text-primaryText text-center flex flex-col items-center'>
         <h1 className='p-5 mb-4 text-2xl'>Sign up for an Account</h1>
@@ -31,7 +47,8 @@ const SignUp = () => {
           placeholder='Last Name'
           required
         />
-        <input
+        {/* ended up removing this field as it wasn't needed */}
+        {/* <input
           {...register('dob')}
           className='input mb-10'
           placeholder='Date of Birth'
@@ -40,7 +57,7 @@ const SignUp = () => {
           type='text'
           required
           pattern={dateRegex}
-        />
+        /> */}
         <input
           {...register('email')}
           className='input mb-10'
@@ -62,7 +79,7 @@ const SignUp = () => {
               if (watch('password') !== val) {
                 return 'Passwords must match.';
               }
-            }
+            },
           })}
           className='input mb-2'
           placeholder='Confirm Password'
