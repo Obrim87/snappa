@@ -42,6 +42,3 @@ const connectToDatabase = async () => {
   return null;
 };
 export default { connectToDatabase, sequelize, rollbackMigration };
-
-// to connect to psql:
-// psql 'postgresql://neondb_owner:OQahNknoe19c@ep-delicate-term-a4kez2s1.us-east-1.aws.neon.tech/snappadb?sslmode=require'

@@ -10,7 +10,7 @@ const { User } = models;
 router.post('/', async (req, res) => {
   const { email, password } = req.body;
 
-  const user: UserType = await User.findOne({
+  const user = await User.findOne({
     where: {
       email: email,
     },
@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
     throw new Error('User not found');
   }
 
-  const verifyPassword = bcrypt.compare(password, user.password);
+  // const verifyPassword = bcrypt.compare(password, user.password);
 });
 
 export default router;
