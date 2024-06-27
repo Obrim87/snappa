@@ -6,3 +6,6 @@ export default {
   PORT: process.env.PORT || 3001,
   SECRET: process.env.SECRET,
 };
+
+// figure out why ts node not being triggered for refresh on save
+// may have to just use dotenv

@@ -16,10 +16,9 @@ router.get('/', async (req, res) => {
   res.send(users);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   const { fname, lname, email, password } = req.body;
 
-  console.log(typeof fname);
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
 
@@ -31,7 +30,7 @@ router.post('/', async (req, res) => {
   });
 
   if (!newUser) {
-    throw new Error('Unable to create user');
+    throw Error('Email already in use');
   }
 
   res.status(201).json({

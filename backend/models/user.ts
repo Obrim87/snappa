@@ -1,9 +1,16 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, InferAttributes } from 'sequelize';
 import config from '../utils/db';
 
 const { sequelize } = config;
 
-class User extends Model {}
+class User extends Model<InferAttributes<User>> {
+  declare id: number;
+  declare fname: string;
+  declare lname: string;
+  declare email: string;
+  declare password: string;
+  declare admin: boolean;
+}
 
 User.init(
   {

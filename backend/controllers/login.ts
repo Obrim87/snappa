@@ -2,7 +2,7 @@ require('express-async-errors');
 import express from 'express';
 import models from '../models/index';
 import bcrypt from 'bcrypt';
-import { UserType } from '../types';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 const { User } = models;
@@ -12,17 +12,29 @@ router.post('/', async (req, res) => {
 
   const user = await User.findOne({
     where: {
-      email: email,
+      email,
     },
   });
 
   if (!user) {
-    throw new Error('User not found');
+    throw Error('User not found');
   }
 
-  // const verifyPassword = bcrypt.compare(password, user.password);
+  const verifyPassword = await bcrypt.compare(password, user.password);
+
+  if (!verifyPassword) {
+    throw Error('Password incorrect');
+  }
+
+  const userForToken = {
+    email,
+    admin: user.admin,
+  };
+
+  const token = jwt.sign(userForToken, process.env.SECRET);
+  res.json({
+    token,
+  });
 });
 
 export default router;
-
-// figure out why I am getting type error

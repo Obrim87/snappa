@@ -2,39 +2,43 @@
 import { useForm } from 'react-hook-form';
 import { UserSignupInput } from '../types';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import { useEffect } from 'react';
+import axios, { AxiosError } from 'axios';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { NotificationContext } from '../App';
+import { ThreeDots } from 'react-loader-spinner';
+import Notification from './Notification';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const SignUp = () => {
+  const [, setNotification] = useContext(NotificationContext);
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     watch,
-    formState,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors, isSubmitting },
   } = useForm<UserSignupInput>();
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      navigate('/sign-in');
-    }
-  }, [isSubmitSuccessful]);
-
-  console.log('form', formState);
 
   return (
     <div className='bg-primary h-screen'>
       <form
         onSubmit={handleSubmit(async (data) => {
-          delete data.confirmPassword;
-          await axios.post(`${apiBaseUrl}/api/users`, data);
+          try {
+            delete data.confirmPassword;
+            await axios.post(`${apiBaseUrl}/api/users`, data);
+            navigate('/sign-in');
+          } catch (err) {
+            if (err instanceof AxiosError) {
+              setNotification(err.response?.data.error);
+              console.log(err);
+            }
+          }
         })}
         className='max-w-xl m-auto text-primaryText text-center flex flex-col items-center'>
         <h1 className='p-5 mb-4 text-2xl'>Sign up for an Account</h1>
+        <Notification />
         <input
           {...register('fname')}
           className='input mb-10'
@@ -97,11 +101,22 @@ const SignUp = () => {
             Have an Account?
           </Link>
         </div>
-        <input
-          type='submit'
-          className='btn-primary w-128'
-          value='Create My Account'
-        />
+        <button className='btn-primary w-128 justify-self-center'>
+          {!isSubmitting ? (
+            'Create My Account'
+          ) : (
+            <ThreeDots
+              visible={true}
+              height='30'
+              width='50'
+              color='#f2f3f5'
+              radius='9'
+              ariaLabel='three-dots-loading'
+              wrapperStyle={{}}
+              wrapperClass='w-fit m-auto'
+            />
+          )}
+        </button>
       </form>
     </div>
   );
