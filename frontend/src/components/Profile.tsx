@@ -1,9 +1,10 @@
 import Notification from './Notification';
 
 const Profile = () => {
+  console.log(localStorage.getItem('auth'));
   return (
-    <div>
-      <div className='flex justify-center bg-primary h-screen'>Profile</div>
+    <div className='flex text-center bg-primary h-screen text-primaryText flex-col'>
+      <h1>Profile</h1>
       <Notification />
     </div>
   );

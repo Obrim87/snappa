@@ -11,3 +11,12 @@ export interface UserSignupInput {
   password: string;
   confirmPassword?: string;
 }
+
+export interface UserProps extends UserSignupInput {
+  id: number;
+}
+
+export interface UserNameDropdownProps {
+  id: number;
+  name: string;
+}

@@ -1,23 +1,31 @@
-import { useForm } from 'react-hook-form';
+import { FieldError, useForm } from 'react-hook-form';
 import { dateRegex } from '../utils/regex.ts';
+import getUserNames from '../utils/getUserNames.ts';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { UserNameDropdownProps } from '../types.ts';
+
 // import Address from './Address.tsx';
-import tempValues from '../data/data.ts';
-import { useRef, useEffect, useState } from 'react';
-import { useMapsLibrary } from '@vis.gl/react-google-maps';
+// import { useRef, useEffect, useState } from 'react';
+// import { useMapsLibrary } from '@vis.gl/react-google-maps';
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const LogGame = () => {
+  const [userNames, setUserNames] = useState<UserNameDropdownProps[]>([]);
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    watch,
+    formState: { errors },
   } = useForm({
     defaultValues: {
       dateOfGame: '3/3/2024',
       address: null,
-      teamOnePlayerOne: '',
-      teamOnePlayerTwo: '',
-      teamTwoPlayerOne: '',
-      teamTwoPlayerTwo: '',
+      teamOnePlayerOne: 0,
+      teamOnePlayerTwo: 0,
+      teamTwoPlayerOne: 0,
+      teamTwoPlayerTwo: 0,
       teamOnePlayerOneTings: 0,
       teamOnePlayerTwoTings: 0,
       teamTwoPlayerOneTings: 0,
@@ -27,57 +35,61 @@ const LogGame = () => {
       teamTwoPlayerOneSinks: 0,
       teamTwoPlayerTwoSinks: 0,
       teamOneScore: null,
-      teamTwoScore: null
-    }
+      teamTwoScore: null,
+    },
   });
 
-  interface AddressProps {
-    onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
-  }
+  useEffect(() => {
+    getUserNames().then((data) => setUserNames(data));
+  }, []);
 
-  const Address = ({ onPlaceSelect }: AddressProps) => {
-    const [placeAutocomplete, setPlaceAutocomplete] =
-      useState<google.maps.places.Autocomplete | null>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
-    const places = useMapsLibrary('places');
+  const populateDropdown = () => {
+    if (!userNames) {
+      return <option>Loading...</option>;
+    }
+    userNames.sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0; // if names equal
+    });
+    return userNames.map((item) => {
+      return (
+        <option key={item.id} value={item.id}>
+          {item.name}
+        </option>
+      );
+    });
+  };
 
-    useEffect(() => {
-      if (!places || !inputRef.current) return;
+  const dropdownValues = populateDropdown();
 
-      const options = {
-        fields: ['name', 'formatted_address']
-      };
+  const formErrorHandler = (error: FieldError) => {
+    if (error.type === 'required') {
+      return <p className={'error-text mb-3'}>This field is required.</p>;
+    }
 
-      setPlaceAutocomplete(new places.Autocomplete(inputRef.current, options));
-    }, [places]);
+    if (error.message === 'Duplicate player') {
+      return <p className={'error-text mb-3'}>Duplicate Player.</p>;
+    }
 
-    useEffect(() => {
-      if (!placeAutocomplete) return;
-
-      placeAutocomplete.addListener('place_changed', () => {
-        onPlaceSelect(placeAutocomplete.getPlace());
-      });
-    }, [onPlaceSelect, placeAutocomplete]);
-
-    return (
-      <input
-        {...register('address', { required: true })}
-        className='input w-80'
-        placeholder='Enter Address'
-        ref={inputRef}
-      />
-    );
+    return <p className={'error-text opacity-0'}>This field is required.</p>;
   };
 
   return (
     <div className='h-screen bg-primary text-center'>
       <h1 className='p-6 text-2xl text-primaryText'>Log a Game</h1>
       <form
-        onSubmit={handleSubmit((data) => console.log(data))}
+        onSubmit={handleSubmit(async (data) => {
+          try {
+            axios.post(`${apiBaseUrl}/api/games/logGame`, data);
+          } catch (err) {
+            console.log(err);
+          }
+        })}
         className='grid justify-center max-w-xl m-auto grid-cols-2 text-primaryText'>
         <div className='col-start-1 col-end-3 text-center m-5'>
           <input
-            {...register('dateOfGame', { required: true })}
+            {...register('dateOfGame', { required: true, valueAsDate: true })}
             className='input w-80'
             placeholder='Date of Game'
             onFocus={(e) => (e.target.placeholder = 'dd-mm-yyyy')}
@@ -97,47 +109,48 @@ const LogGame = () => {
         </label>
         <div className='row-start-3 text-center'>
           <select
-            {...register('teamOnePlayerOne', { required: true })}
+            {...register('teamOnePlayerOne', {
+              required: true,
+              validate: (value) => {
+                if (
+                  watch('teamOnePlayerTwo') === value ||
+                  watch('teamTwoPlayerOne') === value ||
+                  watch('teamTwoPlayerTwo') === value
+                ) {
+                  return 'Duplicate player';
+                }
+              },
+            })}
             className='dropdown'>
             <option value='' disabled>
               Player 1
             </option>
-            {tempValues.map((item) => {
-              return (
-                <option key={item.value} value={item.value}>
-                  {item.value}
-                </option>
-              );
-            })}
+            {dropdownValues}
           </select>
-          {errors.teamOnePlayerOne ? (
-            <p className={'error-text'}>This field is required.</p>
-          ) : (
-            <p className={'error-text opacity-0'}>This field is required.</p>
-          )}
+          {errors.teamOnePlayerOne && formErrorHandler(errors.teamOnePlayerOne)}
         </div>
         <div className='row-start-3 col-start-2 text-center'>
           <select
-            {...register('teamOnePlayerTwo', { required: true })}
+            {...register('teamOnePlayerTwo', {
+              required: true,
+              validate: (value) => {
+                if (
+                  watch('teamOnePlayerOne') === value ||
+                  watch('teamTwoPlayerOne') === value ||
+                  watch('teamTwoPlayerTwo') === value
+                ) {
+                  return 'Duplicate player';
+                }
+              },
+            })}
             className='dropdown'>
             <option value='' disabled>
               Player 2
             </option>
-            {tempValues.map((item) => {
-              return (
-                <option key={item.value} value={item.value}>
-                  {item.value}
-                </option>
-              );
-            })}
+            {dropdownValues}
           </select>
-          {errors.teamOnePlayerTwo ? (
-            <p className={'error-text'}>This field is required.</p>
-          ) : (
-            <p className={'error-text opacity-0'}>This field is required.</p>
-          )}
+          {errors.teamOnePlayerTwo && formErrorHandler(errors.teamOnePlayerTwo)}
         </div>
-
         <div className='row-start-4 text-center'>
           <label>Tings</label>
           <input
@@ -197,45 +210,47 @@ const LogGame = () => {
         </label>
         <div className='row-start-8 col-start-1 text-center'>
           <select
-            {...register('teamTwoPlayerOne', { required: true })}
+            {...register('teamTwoPlayerOne', {
+              required: true,
+              validate: (value) => {
+                if (
+                  watch('teamOnePlayerTwo') === value ||
+                  watch('teamOnePlayerOne') === value ||
+                  watch('teamTwoPlayerTwo') === value
+                ) {
+                  return 'Duplicate player';
+                }
+              },
+            })}
             className='dropdown'>
             <option value='' disabled>
               Player 1
             </option>
-            {tempValues.map((item) => {
-              return (
-                <option key={item.value} value={item.value}>
-                  {item.value}
-                </option>
-              );
-            })}
+            {dropdownValues}
           </select>
-          {errors.teamTwoPlayerOne ? (
-            <p className={'error-text'}>This field is required.</p>
-          ) : (
-            <p className={'error-text opacity-0'}>This field is required.</p>
-          )}
+          {errors.teamTwoPlayerOne && formErrorHandler(errors.teamTwoPlayerOne)}
         </div>
         <div className='row-start-8 col-start-2 text-center'>
           <select
-            {...register('teamTwoPlayerTwo', { required: true })}
+            {...register('teamTwoPlayerTwo', {
+              required: true,
+              validate: (value) => {
+                if (
+                  watch('teamOnePlayerTwo') === value ||
+                  watch('teamTwoPlayerOne') === value ||
+                  watch('teamOnePlayerOne') === value
+                ) {
+                  return 'Duplicate player';
+                }
+              },
+            })}
             className='dropdown'>
             <option value='' disabled>
               Player 2
             </option>
-            {tempValues.map((item) => {
-              return (
-                <option key={item.value} value={item.value}>
-                  {item.value}
-                </option>
-              );
-            })}
+            {dropdownValues}
           </select>
-          {errors.teamTwoPlayerTwo ? (
-            <p className={'error-text'}>This field is required.</p>
-          ) : (
-            <p className={'error-text opacity-0'}>This field is required.</p>
-          )}
+          {errors.teamTwoPlayerTwo && formErrorHandler(errors.teamTwoPlayerTwo)}
         </div>
         <div className='row-start-9 col-start-1 text-center'>
           <label>Tings</label>
@@ -301,7 +316,49 @@ const LogGame = () => {
 
 export default LogGame;
 
-// work on getting this looking pretty!
-// make @apply for dropdown menus, make them match other inputs
-// make @apply for number selectors, make them match other inputs as well
-// get spacing looking better
+// data being sent to backend /api/games/logGame
+// work on writing this data to appropriate table (use schema)
+
+// *** TODO ***
+// work on passing the data that is created then submitting the log game form to the appropriate db tables
+// I think what will be easiest is when a user is created, also create a userStats row with all data set to 0.
+// then when game is created, add data to userGames as well as userStats
+// may have to create backend function that recalculates data in case it gets out of sync (admin only)
+
+// interface AddressProps {
+//   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
+// }
+
+// const Address = ({ onPlaceSelect }: AddressProps) => {
+//   const [placeAutocomplete, setPlaceAutocomplete] =
+//     useState<google.maps.places.Autocomplete | null>(null);
+//   const inputRef = useRef<HTMLInputElement>(null);
+//   const places = useMapsLibrary('places');
+
+//   useEffect(() => {
+//     if (!places || !inputRef.current) return;
+
+//     const options = {
+//       fields: ['name', 'formatted_address']
+//     };
+
+//     setPlaceAutocomplete(new places.Autocomplete(inputRef.current, options));
+//   }, [places]);
+
+//   useEffect(() => {
+//     if (!placeAutocomplete) return;
+
+//     placeAutocomplete.addListener('place_changed', () => {
+//       onPlaceSelect(placeAutocomplete.getPlace());
+//     });
+//   }, [onPlaceSelect, placeAutocomplete]);
+
+//   return (
+//     <input
+//       {...register('address', { required: true })}
+//       className='input w-80'
+//       placeholder='Enter Address'
+//       ref={inputRef}
+//     />
+//   );
+// };

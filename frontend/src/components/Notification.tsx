@@ -1,14 +1,18 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { NotificationContext } from '../App';
 
 const Notification = () => {
   const [notification, setNotification] = useContext(NotificationContext);
 
-  setTimeout(() => {
-    setNotification('');
-  }, 8000);
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setNotification('');
+    }, 8000);
 
-  console.log('notification', notification);
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, []);
 
   if (
     notification === 'User not found' ||
@@ -21,9 +25,7 @@ const Notification = () => {
     return <div className='text-red-400 p-5'>Email already in use</div>;
   }
 
-  return <div className='p-5'>{notification}</div>;
+  return <div className='p-5 text-primaryText'>{notification}</div>;
 };
 
 export default Notification;
-
-// work out why this isnt appearing after logging in!

@@ -57,6 +57,7 @@ function App() {
                 onClick={() => {
                   localStorage.clear();
                   setSignedIn(false);
+                  setNotification('Logged out successfully');
                 }}>
                 Sign Out
               </Link>

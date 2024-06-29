@@ -30,8 +30,8 @@ const SignIn = ({
             const res = await axios.post(`${apiBaseUrl}/api/login`, data);
             localStorage.setItem('auth', res.data.token);
             setSignedIn(true);
-            navigate('/profile');
             setNotification('Logged in successfully');
+            navigate('/profile');
           } catch (err) {
             if (err instanceof AxiosError) {
               setNotification(err.response?.data.error);

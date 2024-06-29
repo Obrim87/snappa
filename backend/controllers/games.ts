@@ -25,4 +25,8 @@ router.get('/', async (req, res) => {
   res.send(games);
 });
 
+router.post('/logGame', async (req, res) => {
+  console.log(req.body);
+});
+
 export default router;

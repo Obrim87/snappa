@@ -29,6 +29,7 @@ const SignUp = () => {
             delete data.confirmPassword;
             await axios.post(`${apiBaseUrl}/api/users`, data);
             navigate('/sign-in');
+            setNotification('User created successfully! Log in below.');
           } catch (err) {
             if (err instanceof AxiosError) {
               setNotification(err.response?.data.error);

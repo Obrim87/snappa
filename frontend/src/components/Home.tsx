@@ -1,7 +1,10 @@
+import Notification from './Notification';
+
 const Home = () => {
   return (
-    <div className='flex justify-center bg-primary h-screen'>
+    <div className='flex text-center flex-col bg-primary h-screen'>
       <img src='main-banner.jpeg' alt='bro throwing a dice' className='h-max' />
+      <Notification />
     </div>
   );
 };
