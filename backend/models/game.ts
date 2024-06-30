@@ -1,9 +1,16 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, InferAttributes } from 'sequelize';
 import config from '../utils/db';
 
 const { sequelize } = config;
 
-class Game extends Model {}
+class Game extends Model<InferAttributes<Game>> {
+  declare id: number;
+  declare date: string;
+  declare location: string | null;
+  declare team1Score: number;
+  declare team2Score: number;
+  declare winningTeam: string;
+}
 
 Game.init(
   {

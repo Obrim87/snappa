@@ -23,11 +23,11 @@ UserGame.init(
       references: { model: 'games', key: 'id' },
     },
     team: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     position: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     tings: {

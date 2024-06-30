@@ -1,10 +1,19 @@
-import express from 'express';
+import express, { Request } from 'express';
 import models from '../models/index';
 import bcrypt from 'bcrypt';
+import tokenExtractor from '../middleware/tokenExtractor';
 require('express-async-errors');
 
 const router = express.Router();
 const { User, UserStat } = models;
+
+interface RequestWithToken extends Request {
+  decodedToken: {
+    id: number;
+    admin: boolean;
+    iat: number;
+  };
+}
 
 router.get('/', async (req, res) => {
   const users = await User.findAll({
@@ -19,6 +28,22 @@ router.get('/', async (req, res) => {
 
   res.send(users);
 });
+
+router.get(
+  '/loggedInUser',
+  tokenExtractor,
+  async (req: RequestWithToken, res) => {
+    const user = await User.findByPk(req.decodedToken.id, {
+      attributes: { exclude: ['admin', 'email', 'password'] },
+      include: {
+        model: UserStat,
+        attributes: { exclude: ['userId', 'id'] },
+      },
+    });
+    if (!user) throw Error('User not found');
+    res.json(user);
+  }
+);
 
 router.post('/', async (req, res) => {
   const { fname, lname, email, password } = req.body;

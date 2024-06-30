@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
   }
 
   const userForToken = {
-    email,
+    id: user.id,
     admin: user.admin,
   };
 

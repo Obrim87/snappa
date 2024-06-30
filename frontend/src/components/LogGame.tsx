@@ -1,9 +1,15 @@
-import { FieldError, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { dateRegex } from '../utils/regex.ts';
-import getUserNames from '../utils/getUserNames.ts';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import {
+  getUserNames,
+  formErrorHandler,
+  organiseFormData,
+} from '../utils/formUtils.tsx';
+import { useContext, useEffect, useState } from 'react';
+import axios, { AxiosError } from 'axios';
 import { UserNameDropdownProps } from '../types.ts';
+import { NotificationContext } from '../App.tsx';
+import Notification from './Notification.tsx';
 
 // import Address from './Address.tsx';
 // import { useRef, useEffect, useState } from 'react';
@@ -13,19 +19,21 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const LogGame = () => {
   const [userNames, setUserNames] = useState<UserNameDropdownProps[]>([]);
+  const [, setNotification] = useContext(NotificationContext);
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
       dateOfGame: '3/3/2024',
       address: null,
-      teamOnePlayerOne: 0,
-      teamOnePlayerTwo: 0,
-      teamTwoPlayerOne: 0,
-      teamTwoPlayerTwo: 0,
+      teamOnePlayerOne: null,
+      teamOnePlayerTwo: null,
+      teamTwoPlayerOne: null,
+      teamTwoPlayerTwo: null,
       teamOnePlayerOneTings: 0,
       teamOnePlayerTwoTings: 0,
       teamTwoPlayerOneTings: 0,
@@ -63,27 +71,24 @@ const LogGame = () => {
 
   const dropdownValues = populateDropdown();
 
-  const formErrorHandler = (error: FieldError) => {
-    if (error.type === 'required') {
-      return <p className={'error-text mb-3'}>This field is required.</p>;
-    }
-
-    if (error.message === 'Duplicate player') {
-      return <p className={'error-text mb-3'}>Duplicate Player.</p>;
-    }
-
-    return <p className={'error-text opacity-0'}>This field is required.</p>;
-  };
-
   return (
     <div className='h-screen bg-primary text-center'>
       <h1 className='p-6 text-2xl text-primaryText'>Log a Game</h1>
+      <Notification />
       <form
         onSubmit={handleSubmit(async (data) => {
           try {
-            axios.post(`${apiBaseUrl}/api/games/logGame`, data);
+            await axios.post(
+              `${apiBaseUrl}/api/games/logGame`,
+              organiseFormData(data)
+            );
+            reset();
+            setNotification('Game logged successfully! Player stats updated');
           } catch (err) {
-            console.log(err);
+            if (err instanceof AxiosError) {
+              setNotification(err.response?.data.error);
+              console.log(err);
+            }
           }
         })}
         className='grid justify-center max-w-xl m-auto grid-cols-2 text-primaryText'>
@@ -92,9 +97,10 @@ const LogGame = () => {
             {...register('dateOfGame', { required: true, valueAsDate: true })}
             className='input w-80'
             placeholder='Date of Game'
-            onFocus={(e) => (e.target.placeholder = 'dd-mm-yyyy')}
-            onBlur={(e) => (e.target.placeholder = 'Date of Game')}
-            pattern={dateRegex}
+            // onFocus={(e) => (e.target.placeholder = 'dd-mm-yyyy')}
+            // onBlur={(e) => (e.target.placeholder = 'Date of Game')}
+            // pattern={dateRegex}
+            type='date'
           />
           {errors.dateOfGame ? (
             <p className={'error-text mb-0'}>This field is required.</p>
@@ -194,7 +200,14 @@ const LogGame = () => {
         <div className='row-start-6 col-start-1 col-end-3 text-center'>
           <label>Team 1 Score</label>
           <input
-            {...register('teamOneScore', { required: true })}
+            {...register('teamOneScore', {
+              required: true,
+              validate: (value) => {
+                if (watch('teamTwoScore') === value) {
+                  return 'Team scores cannot be equal';
+                }
+              },
+            })}
             type='number'
             className={
               errors.teamOneScore
@@ -204,6 +217,7 @@ const LogGame = () => {
             min='0'
             max='15'
           />
+          {errors.teamOneScore && formErrorHandler(errors.teamOneScore)}
         </div>
         <label className='row-start-7 col-start-1 col-end-3 text-center border-t py-4'>
           Team 2
@@ -295,7 +309,14 @@ const LogGame = () => {
         <div className='row-start-11 col-start-1 col-end-3 text-center'>
           <label>Team 2 Score</label>
           <input
-            {...register('teamTwoScore', { required: true })}
+            {...register('teamTwoScore', {
+              required: true,
+              validate: (value) => {
+                if (watch('teamOneScore') === value) {
+                  return 'Team scores cannot be equal';
+                }
+              },
+            })}
             type='number'
             className={
               errors.teamTwoScore
@@ -305,6 +326,7 @@ const LogGame = () => {
             min='0'
             max='15'
           />
+          {errors.teamTwoScore && formErrorHandler(errors.teamTwoScore)}
         </div>
         <div className=' row-start-12 col-start-1 col-end-3 text-center'>
           <input type='submit' className='btn-primary' />
@@ -315,15 +337,6 @@ const LogGame = () => {
 };
 
 export default LogGame;
-
-// data being sent to backend /api/games/logGame
-// work on writing this data to appropriate table (use schema)
-
-// *** TODO ***
-// work on passing the data that is created then submitting the log game form to the appropriate db tables
-// I think what will be easiest is when a user is created, also create a userStats row with all data set to 0.
-// then when game is created, add data to userGames as well as userStats
-// may have to create backend function that recalculates data in case it gets out of sync (admin only)
 
 // interface AddressProps {
 //   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
