@@ -6,6 +6,6 @@
     "sourceMap": true,
     "esModuleInterop": true
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "controllers/users.test.ts"],
   "exclude": ["node_modules"]
 }

@@ -1,11 +1,8 @@
 import { Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage } from 'umzug';
-import dotenv from 'dotenv';
-dotenv.config();
+import configs from './configs';
 
-console.log('process', process.env.DATABASE_URL);
-
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
+const sequelize = new Sequelize(configs.DATABASE_URL, {
   dialect: 'postgres',
 });
 
@@ -20,6 +17,7 @@ const migratorConfig = {
 
 // starts the migration
 const runMigrations = async () => {
+  if (process.env.NODE_ENV === 'test') return;
   const migrator = new Umzug(migratorConfig);
   const migrations = await migrator.up();
 

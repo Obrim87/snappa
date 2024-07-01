@@ -7,7 +7,7 @@ import { ProfileData } from '../types';
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const Profile = () => {
-  const [notification, setNotification] = useContext(NotificationContext);
+  const [, setNotification] = useContext(NotificationContext);
   const [userStats, setUserStats] = useState<ProfileData | undefined>();
   const loggedInUserToken = localStorage.getItem('auth');
 
