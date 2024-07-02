@@ -19,6 +19,7 @@ export const NotificationContext = createContext<
 
 function App() {
   const [signedIn, setSignedIn] = useState(false);
+
   const [notification, setNotification] = useState('');
 
   useEffect(() => {

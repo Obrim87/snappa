@@ -17,7 +17,7 @@ const Profile = () => {
 
   useEffect(() => {
     axios
-      .get(`${apiBaseUrl}/api/users/loggedInUser`, {
+      .get(`${apiBaseUrl}/api/users/loggedInUserStats`, {
         headers: {
           Authorization: `Bearer ${loggedInUserToken}`,
         },

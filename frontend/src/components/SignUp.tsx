@@ -77,6 +77,7 @@ const SignUp = () => {
           type='password'
           required
           // pattern='^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,}$' enable once site up and running
+          // min 8 chars, 1 capital, 1 number, 1 symbol
         />
         <input
           {...register('confirmPassword', {

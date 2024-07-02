@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get(
-  '/loggedInUser',
+  '/loggedInUserStats',
   tokenExtractor,
   async (req: RequestWithToken, res) => {
     const user = await User.findByPk(req.decodedToken.id, {
@@ -41,6 +41,7 @@ router.get(
         attributes: { exclude: ['userId', 'id'] },
       },
     });
+
     if (!user) throw Error('User not found');
     res.json(user);
   }
@@ -50,15 +51,18 @@ const userSchema = object({
   fname: string().required(),
   lname: string().required(),
   email: string().email().required(),
-  password: string().required(),
+  password: string()
+    .required()
+    .matches(
+      /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
+      'Password must contain at least 8 characters, 1 uppercase, 1 number and 1 special character'
+    ),
 });
 
 router.post('/', async (req, res) => {
   const { fname, lname, email, password } = req.body;
 
-  const parsedUser = await userSchema.validate(req.body);
-
-  console.log(parsedUser);
+  await userSchema.validate(req.body);
 
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);

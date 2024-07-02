@@ -8,7 +8,19 @@
   "editor.quickSuggestions": {
     "strings": true
   },
-  "cSpell.words": ["Micko", "smitty", "Smitty"],
+  "cSpell.words": [
+    "Ijox",
+    "Ijpm",
+    "Micko",
+    "ODQs",
+    "PCPQ",
+    "Pesn",
+    "smitty",
+    "Smitty",
+    "Swia",
+    "Wruqjt",
+    "XVCJ"
+  ],
   "css.customData": [".vscode/tailwind.json"],
   "css.lint.unknownAtRules": "ignore"
 }
