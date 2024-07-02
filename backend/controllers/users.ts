@@ -2,6 +2,7 @@ import express, { Request } from 'express';
 import models from '../models/index';
 import bcrypt from 'bcrypt';
 import tokenExtractor from '../middleware/tokenExtractor';
+import { object, string } from 'yup';
 require('express-async-errors');
 
 const router = express.Router();
@@ -45,8 +46,19 @@ router.get(
   }
 );
 
+const userSchema = object({
+  fname: string().required(),
+  lname: string().required(),
+  email: string().email().required(),
+  password: string().required(),
+});
+
 router.post('/', async (req, res) => {
   const { fname, lname, email, password } = req.body;
+
+  const parsedUser = await userSchema.validate(req.body);
+
+  console.log(parsedUser);
 
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
