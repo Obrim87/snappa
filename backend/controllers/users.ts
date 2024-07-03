@@ -60,10 +60,9 @@ const userSchema = object({
 });
 
 router.post('/', async (req, res) => {
-  const { fname, lname, email, password } = req.body;
-
   await userSchema.validate(req.body);
 
+  const { fname, lname, email, password } = req.body;
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
 

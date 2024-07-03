@@ -3,13 +3,20 @@ import express from 'express';
 import models from '../models/index';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { object, string } from 'yup';
 
 const router = express.Router();
 const { User } = models;
 
-router.post('/', async (req, res) => {
-  const { email, password } = req.body;
+const loginSchema = object({
+  email: string().email().required(),
+  password: string().required(),
+});
 
+router.post('/', async (req, res) => {
+  await loginSchema.validate(req.body);
+
+  const { email, password } = req.body;
   const user = await User.findOne({
     where: {
       email,

@@ -338,8 +338,6 @@ describe('GET /loggedInUserStats', () => {
         .set('Authorization', invalidToken)
         .expect(400);
 
-      console.log(response.body);
-
       expect(response.body).toEqual({ error: 'User not found' });
     });
   });

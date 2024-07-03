@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "NODE_ENV=production node build/index.js",
-    "dev": "NODE_ENV=development nodemon index.ts",
+    "dev": "NODE_ENV=development nodemon utils/server.ts",
     "test": "NODE_ENV=test jest --detectOpenHandles --forceExit",
     "migration:down": "node utils/rollback.ts"
   },
