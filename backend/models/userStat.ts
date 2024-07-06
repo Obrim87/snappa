@@ -3,7 +3,16 @@ import config from '../utils/db';
 
 const { sequelize } = config;
 
-class UserStat extends Model {}
+class UserStat extends Model {
+  declare id: number;
+  declare totalTings: number;
+  declare totalSinks: number;
+  declare pointsFor: number;
+  declare pointsAgainst: number;
+  declare totalGames: number;
+  declare totalWins: number;
+  declare totalLosses: number;
+}
 
 UserStat.init(
   {

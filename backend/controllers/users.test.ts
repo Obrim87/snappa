@@ -61,14 +61,17 @@ describe('delete user and userStat table data before each test', () => {
       };
 
       test('should return users in JSON', async () => {
-        await api
+        const response = await api
           .post('/api/users')
           .send(newUser)
           .expect('Content-Type', /application\/json/);
+
+        expect(response.body).toHaveProperty('id');
+        expect(response.body).toHaveProperty('email', newUser.email);
       });
 
-      test('should respond with a 200 status', async () => {
-        await api.get('/api/users').expect(200);
+      test('should respond with a 201 status', async () => {
+        await api.post('/api/users').send(newUser).expect(201);
       });
 
       test('should create both a user and userStats record', async () => {

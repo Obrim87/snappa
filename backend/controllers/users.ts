@@ -93,7 +93,8 @@ router.post('/', async (req, res) => {
   }
 
   res.status(201).json({
-    success: true,
+    id: newUser.id,
+    email: newUser.email,
   });
 });
 
