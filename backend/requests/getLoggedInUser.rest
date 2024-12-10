@@ -1,3 +1,0 @@
-GET http://localhost:3001/api/users/loggedInUserStats
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjAsImFkbWluIjp0cnVlLCJpYXQiOjE3MjA1MTcyNjl9.kSVkr2vLFeh8YhyEdYTberU6e176jr2JYMAiIGx4nL8
