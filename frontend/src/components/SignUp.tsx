@@ -8,8 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import { NotificationContext } from '../App';
 import { ThreeDots } from 'react-loader-spinner';
 import Notification from './Notification';
+import configs from '../utils/config.ts';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const { apiBaseUrl } = configs;
 
 const SignUp = () => {
   const [, setNotification] = useContext(NotificationContext);

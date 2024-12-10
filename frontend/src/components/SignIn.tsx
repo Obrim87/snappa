@@ -6,8 +6,9 @@ import axios, { AxiosError } from 'axios';
 import { ThreeDots } from 'react-loader-spinner';
 import { NotificationContext } from '../App';
 import Notification from './Notification';
+import configs from '../utils/config.ts';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const { apiBaseUrl } = configs;
 
 const SignIn = ({
   setSignedIn,
@@ -48,6 +49,7 @@ const SignIn = ({
           className='input mb-10'
           placeholder='Email'
           required
+          type='email'
         />
 
         <input
@@ -65,7 +67,9 @@ const SignIn = ({
             Need an Account?
           </Link>
         </div>
-        <button className='btn-primary w-128 justify-self-center'>
+        <button
+          className='btn-primary w-128 justify-self-center'
+          data-testid='submitButton'>
           {!isSubmitting ? (
             'Sign-In'
           ) : (

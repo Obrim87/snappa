@@ -104,9 +104,9 @@ describe('/POST /games/logGames', () => {
     test('should increase userStat data by correct amount for all players', async () => {
       await api.post('/api/games/logGame').send(game).expect(201);
 
-      const response = await UserStat.findAll({});
+      const userStats = await UserStat.findAll({});
 
-      for (const userStat of response) {
+      for (const userStat of userStats) {
         if (userStat.id === userIdArr[0]) {
           expect(userStat.totalTings).toEqual(2);
           expect(userStat.totalSinks).toEqual(1);
@@ -281,8 +281,10 @@ describe('/POST /games/logGames', () => {
       }
 
       const games = await Game.findAll({});
+      const userGames = await UserGame.findAll({});
 
       expect(games.length).toEqual(0);
+      expect(userGames.length).toEqual(0);
     });
   });
 

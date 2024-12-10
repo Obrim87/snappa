@@ -6,7 +6,7 @@ import { object, string } from 'yup';
 require('express-async-errors');
 
 const router = express.Router();
-const { User, UserStat } = models;
+const { User, UserStat, UserGame, Game } = models;
 
 interface RequestWithToken extends Request {
   decodedToken: {
@@ -36,10 +36,15 @@ router.get(
   async (req: RequestWithToken, res) => {
     const user = await User.findByPk(req.decodedToken.id, {
       attributes: { exclude: ['admin', 'email', 'password'] },
-      include: {
-        model: UserStat,
-        attributes: { exclude: ['userId', 'id'] },
-      },
+      include: [
+        {
+          model: UserStat,
+          attributes: { exclude: ['userId', 'id'] },
+        },
+        {
+          model: Game,
+        },
+      ],
     });
 
     if (!user) throw Error('User not found');

@@ -6,6 +6,6 @@
     "sourceMap": true,
     "esModuleInterop": true
   },
-  "include": ["**/*.ts", "controllers/users.test.ts"],
+  "include": ["**/*.ts", "controllers/users.test.ts", "jest.config.js"],
   "exclude": ["node_modules"]
 }

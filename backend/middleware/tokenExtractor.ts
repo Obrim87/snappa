@@ -1,17 +1,29 @@
 import jwt from 'jsonwebtoken';
+import configs from '../utils/configs';
+import { Response, NextFunction } from 'express';
+import { RequestWithDecodedToken } from '../types';
 
-const tokenExtractor = (req, res, next) => {
+const { SECRET } = configs;
+
+const tokenExtractor = (
+  req: RequestWithDecodedToken,
+  res: Response,
+  next: NextFunction
+) => {
   const authorization = req.get('Authorization');
 
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    req.decodedToken = jwt.verify(
-      authorization.substring(7),
-      process.env.SECRET
-    );
-  } else {
-    throw Error('token missing');
+  if (!authorization) {
+    throw Error('Unauthorized: No token provided');
   }
-  next();
+
+  jwt.verify(authorization.substring(7), SECRET, (err, decoded) => {
+    if (err) {
+      throw Error('Unauthorized: Invalid token');
+    }
+
+    req.decodedToken = decoded;
+    next();
+  });
 };
 
 export default tokenExtractor;

@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface UserType {
   id: number;
   fname: string;
@@ -21,4 +23,8 @@ export interface LogGameData {
   players: LogGameDataPlayer[];
   teamOneScore: number;
   teamTwoScore: number;
+}
+
+export interface RequestWithDecodedToken extends Request {
+  decodedToken?: string;
 }

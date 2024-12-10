@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { LogGameData, UserProps } from '../types.ts';
 import { FieldError } from 'react-hook-form';
-
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+import configs from '../utils/config.ts';
+const { apiBaseUrl } = configs;
 
 export const getUserNames = async () => {
   const users = await axios.get(`${apiBaseUrl}/api/users`);

@@ -40,6 +40,29 @@ export interface LogGameData {
   teamTwoScore: string | null;
 }
 
+interface UserGame {
+  against: number;
+  for: number;
+  gameId: number;
+  id: number;
+  position: number;
+  sinks: number;
+  team: number;
+  tings: number;
+  userId: number;
+  win: boolean;
+}
+
+interface Games {
+  id: number;
+  date: string;
+  location?: string;
+  team1Score: number;
+  team2Score: number;
+  winningTeam: string;
+  userGame: UserGame;
+}
+
 export interface ProfileData {
   id: number;
   fname: string;
@@ -53,4 +76,5 @@ export interface ProfileData {
     totalTings: number;
     totalWins: number;
   };
+  games: Games[];
 }

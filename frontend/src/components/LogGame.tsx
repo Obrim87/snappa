@@ -9,12 +9,14 @@ import axios, { AxiosError } from 'axios';
 import { UserNameDropdownProps } from '../types.ts';
 import { NotificationContext } from '../App.tsx';
 import Notification from './Notification.tsx';
+import configs from '../utils/config.ts';
+const { apiBaseUrl } = configs;
 
 // import Address from './Address.tsx';
 // import { useRef, useEffect, useState } from 'react';
 // import { useMapsLibrary } from '@vis.gl/react-google-maps';
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+// const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const LogGame = () => {
   const [userNames, setUserNames] = useState<UserNameDropdownProps[]>([]);
